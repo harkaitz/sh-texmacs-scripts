@@ -1,0 +1,31 @@
+#!/bin/sh -e
+##:
+#h: Usage: tm2pdf file.tm ...
+#h:
+#h: Print "file.tm" TeXmacs file to "file.pdf".
+##:
+tm2pdf() {
+    local tm tm_f tm_b pdf ret=0 pwd="$(pwd)" tmp="$(mktemp)"
+    for tm in "$@"; do
+        tm_d="$(dirname "${tm}")"
+        tm_b="$(basename "${tm}" .tm)"
+        pdf="${tm_b}.pdf"
+        cd "${tm_d}"
+        if texmacs -c "${tm_b}.tm" "${pdf}" -q > "${tmp}" 2>&1; then
+            true
+        else
+            ret="$?"
+        fi
+        sed '/warning/d' "${tmp}" >&2
+        rm -f "${tmp}"
+        cd "${pwd}"
+    done
+    return "${ret}"
+}
+## -------------------------------------------------------------------
+if test @"${SCRNAME:-$(basename "$0")}" = @"tm2pdf"; then
+    case "${1}" in
+        ''|-h|--help) sed -n 's/^ *#h: \{0,1\}//p' "$0";;
+        *)            tm2pdf "$@"; exit 0;;
+    esac
+fi
