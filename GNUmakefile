@@ -24,4 +24,5 @@ install: install-sh
 install-sh:
 	mkdir -p $(DESTDIR)$(PREFIX)/bin
 	cp bin/tm2pdf $(DESTDIR)$(PREFIX)/bin
+	cp bin/texmacs-h-tm-forge $(DESTDIR)$(PREFIX)/bin
 ## -- BLOCK:sh --

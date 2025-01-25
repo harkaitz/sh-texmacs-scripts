@@ -1,0 +1,187 @@
+#!/bin/sh -e
+##:
+#h: Usage: texmacs-h-tm-forge ...
+#h:
+#h: Templates and examples from "tm-forge".
+#h:
+#h:   download             : "tm-forge" in "~/.local/src/tm-forge".
+#h:   book-qft ...         : Math book with Mathematica/Sagemath.
+#h:   exercises ...        : Exercise sheets.
+#h:   notes ...            : Note taking in talks.
+#h:   cv-1c-altmejd-old ...: Curriculum Vitae (eu like).
+#h:   cv-1c-altmejd ...    : Curriculum Vitae (eu like).
+#h:   cv-1c-vita ...       : Curriculum Vitae (eu like).
+#h:   cv-2c-template ...   : Two column, very good.
+#h:   slides-audoly ...    : Blue, rounded title slides.
+#h:   slides-frontisi ...  : Slide with bubbles.
+#h:   slides-gubinelli ... : Coffee painted paper.
+#h:   slides-meyer ...     : Oxford. Course/class like.
+#h:   theses-barashkov ... : Math theses.
+#h:   theses-galeati ...   : Math theses.
+#h:   theses-turra ...     : Math theses / book.
+#h:   beamer-metro ...     : A modern Beamer theme.
+#h:
+#h: Environment variables: PDFREADER, TEXMACS
+##:
+texmacs_h_tm_forge() {
+    local name="$1" cmd="$2" pdf= tm= pwd="$(pwd)"
+    shift
+    case "${name}" in
+        show)              texmacs_h_tm_forge_show_variables; return 0;;
+        download)          tm_forge_download; return 0 ;;
+        book-qft)          tm_forge__book_qft          ;;
+        exercises)         tm_forge__exercises         ;;
+        notes)             tm_forge__notes             ;;
+        cv-1c-altmejd-old) tm_forge__cv_1c_altmejd_old ;;
+        cv-1c-altmejd)     tm_forge__cv_1c_altmejd     ;;
+        cv-1c-vita)        tm_forge__cv_1c_vita        ;;
+        cv-2c-template)    tm_forge__cv_2c_template    ;;
+        slides-audoly)     tm_forge__slides_audoly     ;;
+        slides-frontisi)   tm_forge__slides_frontisi   ;;
+        slides-gubinelli)  tm_forge__slides_gubinelli  ;;
+        slides-meyer)      tm_forge__slides_meyer      ;;
+        theses-barashkov)  tm_forge__theses_barashkov  ;;
+        theses-galeati)    tm_forge__theses_galeati    ;;
+        theses-turra)      tm_forge__theses_turra      ;;
+        beamer-metro)      tm_forge__beamer_metro      ;;
+        *)  echo >&2 "error: Invalid argument: ${name}"; return 1;;
+    esac
+    case "${cmd}" in
+        '')
+            cat <<-EOF
+		pdf : ${pdf}
+		tm  : ${tm}
+		EOF
+            ;;
+        pdf)
+            if test ! -n "${pdf}"; then
+                echo >&2 "error: No pdf in template."
+                return 1
+            fi
+            ${PDFREADER:-xdg-open} "${pdf}"
+            ;;
+        tm)
+            if test ! -n "${tm}"; then
+                echo >&2 "error: No .tm in template."
+                return 1
+            fi
+            cd "$(dirname "${tm}")"
+            ${TEXMACS:-texmacs} "$(basename "${tm}")"
+            cd "${pwd}"
+            ;;
+    esac
+}
+texmacs_h_tm_forge_show_variables() {
+    echo "TM_FORGE  : ${TM_FORGE}"
+    echo "PDFREADER : ${PDFREADER:-xdg-open}"
+    echo "TEXMACS   : ${TEXMACS:-texmacs}"
+}
+texmacs_h_tm_forge_calc_variables() {
+    TM_FORGE="${TM_FORGE:-${HOME}/.local/src/tm-forge}"
+}
+# --------------------------------------------------------------------
+tm_forge_download() {
+    local url='https://github.com/texmacs/tm-forge.git'
+    local src="${HOME}/.local/src"
+    if test ! -d "${src}/tm-forge"; then
+        mkdir -p "${src}"
+        git clone "${url}" "${src}/tm-forge" >&2
+    fi
+}
+# --------------------------------------------------------------------
+tm_forge__book_qft() {
+    local t="${TM_FORGE}/examples/books/book_qft"
+    pdf="${t}/qft_1_new.pdf" tm="${t}/qft_1_new.tm"
+}
+tm_forge__exercises() {
+    local t="${TM_FORGE}/examples/other-examples/exercises-template"
+    pdf="${t}/exercises-template.pdf" tm="${t}/exercises-template.tm"
+}
+tm_forge__notes() {
+    local t="${TM_FORGE}/examples/other-examples/seminar-journal"
+    pdf="${t}/seminar-journal-demo.pdf" tm="${t}/seminar-journal-demo.tm"
+}
+tm_forge__cv_1c_altmejd_old() {
+    local t="${TM_FORGE}/examples/resumes/cv-altmejd"
+    tm="${t}/cv-altmejd-old.tm"
+}
+tm_forge__cv_1c_altmejd() {
+    local t="${TM_FORGE}/examples/resumes/cv-altmejd"
+    pdf="${t}/cv-altmejd.pdf" tm="${t}/cv-altmejd.tm"
+}
+tm_forge__cv_1c_vita() {
+    local t="${TM_FORGE}/examples/resumes/kjh-vita"
+    pdf="${t}/kjh-vita.pdf" tm="${t}/kjh-vita.tm"
+}
+tm_forge__cv_2c_template() {
+    local t="${TM_FORGE}/examples/resumes/resume-template"
+    pdf="${t}/resume-template.pdf"
+}
+tm_forge__slides_audoly() {
+    local t="${TM_FORGE}/examples/slides/lecture-slides-audoly"
+    pdf="${t}/amphi08_tm.pdf"
+    tm="${t}/amphi08_tm.tm"
+    ts="${t}/slides_mec430.ts"
+}
+tm_forge__slides_frontisi() {
+    local t="${TM_FORGE}/examples/slides/math-diagram-frontisi"
+    pdf="${t}/math-diagram-frontisi.pdf"
+    tm="${t}/math-diagram-frontisi.tm"
+}
+tm_forge__slides_gubinelli() {
+    local t="${TM_FORGE}/examples/slides/slides-gubinelli-eth"
+    pdf="${t}/talk-eth-2020.pdf"
+    tm="${t}/talk-eth-2020.tm"
+}
+tm_forge__slides_meyer() {
+    local t="${TM_FORGE}/examples/slides/slides-meyer-cdt"
+    pdf="${t}/example-slides-meyer-cdt.pdf"
+    tm="${t}/example-slides-meyer-cdt.tm"
+}
+tm_forge__theses_barashkov() {
+    local t="${TM_FORGE}/examples/theses"
+    pdf="${t}/phd-thesis-barashkov-example.pdf"
+    tm="${t}/phd-thesis-barashkov-example.tm"
+}
+tm_forge__theses_galeati() {
+    local t="${TM_FORGE}/examples/theses"
+    pdf="${t}/phd-thesis-galeati-example.pdf"
+    tm="${t}/phd-thesis-galeati-example.tm"
+}
+tm_forge__theses_turra() {
+    local t="${TM_FORGE}/examples/theses"
+    pdf="${t}/phd-thesis-turra-example.pdf"
+    tm="${t}/phd-thesis-turra-example.tm"
+}
+tm_forge__beamer_metro() {
+    local t="${TM_FORGE}/styles/beamer/metropolis"
+    pdf="${t}/metropolis-demo.pdf"
+    tm="${t}/metropolis-demo.tm"
+    ts="${t}/metropolis.ts"
+}
+# --------------------------------------------------------------------
+tm_forge__skip() {
+    cat <<-EOF
+	miscellanea
+	|- lorem-ipsum : A lorem-ipsum generator.
+	|- tetris      : A tetris game with TeXmacs tables
+	|- komments    : Text changes proposals and/or comments among co-authors.
+	|- fontawesome : A plugin to support the Fontawesome icon collections.
+	|- outline     : An "Outline mode" plugin for reorganizing documents in a structure-aware manner.
+	|- slidemove   : A plugin to move slides around in beamer presentations
+	|- post-modern-icons : Icon collection.
+	|- tm-publist  : A package to produce publication lists sorted by year.
+	examples
+	|- papers/*
+	|- slides
+	|  |- talk-texmacs-guile : Not interesting style.
+	EOF
+}
+# --------------------------------------------------------------------
+texmacs_h_tm_forge_calc_variables
+if test @"${SCRNAME:-$(basename "$0")}" = @"texmacs-h-tm-forge"; then
+    case "${1}" in
+        ''|-h|--help) sed -n 's/^ *#h: \{0,1\}//p' "$0";;
+        *)            texmacs_h_tm_forge "$@"; exit 0;;
+    esac
+fi
