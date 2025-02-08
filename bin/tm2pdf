@@ -3,6 +3,8 @@
 #h: Usage: tm2pdf file.tm ...
 #h:
 #h: Print "file.tm" TeXmacs file to "file.pdf".
+#h:
+#h: Environment variables: PDFDIR
 ##:
 tm2pdf() {
     local tm tm_f tm_b pdf ret=0 pwd="$(pwd)" tmp="$(mktemp)"
@@ -11,7 +13,7 @@ tm2pdf() {
         tm_b="$(basename "${tm}" .tm)"
         pdf="${tm_b}.pdf"
         cd "${tm_d}"
-        if texmacs -c "${tm_b}.tm" "${pdf}" -q > "${tmp}" 2>&1; then
+        if texmacs -c "${tm_b}.tm" "${PDFDIR:-.}/${pdf}" -q > "${tmp}" 2>&1; then
             true
         else
             ret="$?"
